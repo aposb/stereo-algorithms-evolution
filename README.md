@@ -18,13 +18,13 @@ The algorithms are optimized for performance using matrix operations and other t
 
 ## Algorithms
 
-| Number | Name | Implementation |
+| Number | Name | MATLAB Implementation |
 | --- | --- | --- |
-| 1 | Block Matching | **[`stereo1_BM.m`](./stereo1_BM.m)** |
-| 2 | Dynamic Programming | **[`stereo2_DP.m`](./stereo2_DP.m)** |
-| 3 | Semi-Global Matching | **[`stereo3_SGM.m`](./stereo3_SGM.m)** |
-| 4 | Belief Propagation (Sequential) | **[`stereo4_BP1.m`](./stereo4_BP1.m)** |
-| 5 | Belief Propagation (Synchronous) | **[`stereo5_BP2.m`](./stereo5_BP2.m)** |
+| 1 | Block Matching | **[`stereo1_BM.m`](./matlab/stereo1_BM.m)** |
+| 2 | Dynamic Programming | **[`stereo2_DP.m`](./matlab/stereo2_DP.m)** |
+| 3 | Semi-Global Matching | **[`stereo3_SGM.m`](./matlab/stereo3_SGM.m)** |
+| 4 | Belief Propagation (Sequential) | **[`stereo4_BP1.m`](./matlab/stereo4_BP1.m)** |
+| 5 | Belief Propagation (Synchronous) | **[`stereo5_BP2.m`](./matlab/stereo5_BP2.m)** |
 
 ## Installation
 
@@ -41,7 +41,7 @@ You may optionally modify other parameters as needed. If the input images contai
 
 Below are the disparity maps produced from the **Tsukuba stereo pair**.
 
-![Tsukuba Left](left.png) ![Tsukuba Right](right.png)
+![Tsukuba Left](matlab/left.png) ![Tsukuba Right](matlab/right.png)
 
 ### Block Matching
 
