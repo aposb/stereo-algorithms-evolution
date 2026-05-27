@@ -1,6 +1,6 @@
 # Basic Stereo Algorithms Evolution
 
-The basic stereoscopic algorithms have many similarities to each other and can be considered, in a way, that each algorithm is an evolution of another. In this project we created simplified forms of some basic stereoscopic algorithms in MATLAB. The code has been adapted to show the improvement and evolution of an algorithm from the previous one.
+The basic stereoscopic algorithms have many similarities to each other and can be considered, in a way, that each algorithm is an evolution of another. In this project we created simplified forms of some basic stereoscopic algorithms in MATLAB and Python. The code has been adapted to show the improvement and evolution of an algorithm from the previous one.
 
 ## Features
 
@@ -12,30 +12,38 @@ Stereo matching algorithms:
 4. **Belief Propagation (Sequential)**
 5. **Belief Propagation (Synchronous)**
 
-The algorithms are implemented in MATLAB.
+All algorithms are implemented in both MATLAB and Python.
 
 The algorithms are optimized for performance using matrix operations and other techniques.
 
 ## Algorithms
 
-| Number | Name | MATLAB Implementation |
-| --- | --- | --- |
-| 1 | Block Matching | **[`stereo1_BM.m`](./matlab/stereo1_BM.m)** |
-| 2 | Dynamic Programming | **[`stereo2_DP.m`](./matlab/stereo2_DP.m)** |
-| 3 | Semi-Global Matching | **[`stereo3_SGM.m`](./matlab/stereo3_SGM.m)** |
-| 4 | Belief Propagation (Sequential) | **[`stereo4_BP1.m`](./matlab/stereo4_BP1.m)** |
-| 5 | Belief Propagation (Synchronous) | **[`stereo5_BP2.m`](./matlab/stereo5_BP2.m)** |
+| Number | Name | MATLAB Implementation | Python Implementation |
+| --- | --- | --- | --- |
+| 1 | Block Matching | **[`stereo1_BM.m`](./matlab/stereo1_BM.m)** | **[`stereo1_BM.py`](./python/stereo1_BM.py)** |
+| 2 | Dynamic Programming | **[`stereo2_DP.m`](./matlab/stereo2_DP.m)** | **[`stereo2_DP.py`](./python/stereo2_DP.py)** |
+| 3 | Semi-Global Matching | **[`stereo3_SGM.m`](./matlab/stereo3_SGM.m)** | **[`stereo3_SGM.py`](./python/stereo3_SGM.py)** |
+| 4 | Belief Propagation (Sequential) | **[`stereo4_BP1.m`](./matlab/stereo4_BP1.m)** | **[`stereo4_BP1.py`](./python/stereo4_BP1.py)** |
+| 5 | Belief Propagation (Synchronous) | **[`stereo5_BP2.m`](./matlab/stereo5_BP2.m)** | **[`stereo5_BP2.py`](./python/stereo5_BP2.py)** |
 
 ## Installation
 
 Download the project as ZIP file, unzip it, and run the scripts.
 
+### Python Requirements
+
+- NumPy
+- Matplotlib
+- OpenCV (`opencv-python`)
+
 ## Usage
 
 A stereo matching algorithm works with stereo image pairs to produce disparity maps.
-This project contains 5 MATLAB scripts, each implementing a stereo matching algorithm. The files `left.png` and `right.png` contain the stereo image pair used as input.
+This project contains 5 (MATLAB and Python) scripts, each implementing a stereo matching algorithm. The files `left.png` and `right.png` contain the stereo image pair used as input.
 To use a different stereo pair, replace these two images with your own. In this case, you must also adjust the **disparity levels** parameter in the script you are running.
 You may optionally modify other parameters as needed. If the input images contain little or no noise, it is recommended not to use the Gaussian filter.
+
+- The results between MATLAB and Python implementation are similar.
 
 ## Results
 
