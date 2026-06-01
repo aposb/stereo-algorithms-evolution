@@ -41,7 +41,7 @@ for d in range(dispLevels):
 # Compute smoothness costs
 d = np.arange(dispLevels)
 smoothnessCosts = computeSmoothnessCost(d,d[np.newaxis,:].T)
-smoothnessCosts3H = smoothnessCosts[np.newaxis,:,:].astype(np.int32)
+smoothnessCosts4d = smoothnessCosts[np.newaxis,np.newaxis,:,:].astype(np.int32)
 
 # Initialize minimum cost paths and transitions for the left to right direction
 fromLeft = np.zeros((rows,cols,dispLevels),dtype=np.int32)
@@ -49,10 +49,12 @@ transitions = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 
 # Compute minimum cost paths and transitions for left to right direction
 for x in range(cols-1):
-    sumCosts = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:] + smoothnessCosts3H
+    sumCosts = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
-    fromLeft[:,x+1,:] = minSumCosts
-    transitions[:,x+1,:] = np.argmin(sumCosts,axis=2)
+    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
+    fromLeft[:,x+1,:] = normalizedCosts[:,0,:]
+    ind = np.argmin(sumCosts,axis=2)
+    transitions[:,x+1,:] = ind[:,0,:]
 
 # Compute the disparity map - Backtracking
 dispMap = np.zeros((rows,cols))

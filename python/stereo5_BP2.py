@@ -42,7 +42,7 @@ for d in range(dispLevels):
 # Compute smoothness costs
 d = np.arange(dispLevels)
 smoothnessCosts = computeSmoothnessCost(d,d[np.newaxis,:].T)
-smoothnessCosts4 = smoothnessCosts[np.newaxis,np.newaxis,:,:].astype(np.int32)
+smoothnessCosts4d = smoothnessCosts[np.newaxis,np.newaxis,:,:].astype(np.int32)
 
 # Initialize messages for the 4 directions
 fromLeft = np.zeros((rows,cols,dispLevels),dtype=np.int32)
@@ -52,25 +52,25 @@ fromDown = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 
 for it in range(iterations):
     # Create messages to right
-    sumCosts = (matchingCosts + fromUp + fromDown + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4
+    sumCosts = (matchingCosts + fromUp + fromDown + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
     normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
     toRight = normalizedCosts
 
     # Create messages to left
-    sumCosts = (matchingCosts + fromUp + fromDown + fromRight)[:,:,:,np.newaxis] + smoothnessCosts4
+    sumCosts = (matchingCosts + fromUp + fromDown + fromRight)[:,:,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
     normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
     toLeft = normalizedCosts
 
     # Create messages to down
-    sumCosts = (matchingCosts + fromUp + fromRight + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4
+    sumCosts = (matchingCosts + fromUp + fromRight + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
     normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
     toDown = normalizedCosts
 
     # Create messages to up
-    sumCosts = (matchingCosts + fromDown + fromRight + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4
+    sumCosts = (matchingCosts + fromDown + fromRight + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
     normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
     toUp = normalizedCosts
@@ -97,7 +97,7 @@ for it in range(iterations):
     plt.show(block=False)
     plt.pause(0.01)
 
-    # Show energy and iteration
+    # Show iterations
     print("iteration: {0}/{1}".format(it+1,iterations))
 
 # Save disparity map

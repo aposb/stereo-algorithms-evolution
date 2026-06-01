@@ -41,8 +41,7 @@ for d in range(dispLevels):
 # Compute smoothness costs
 d = np.arange(dispLevels)
 smoothnessCosts = computeSmoothnessCost(d,d[np.newaxis,:].T)
-smoothnessCosts3H = smoothnessCosts[np.newaxis,:,:].astype(np.int32)
-smoothnessCosts3V = np.moveaxis(smoothnessCosts3H,0,1)
+smoothnessCosts4d = smoothnessCosts[np.newaxis,np.newaxis,:,:].astype(np.int32)
 
 # Initialize minimum cost paths for the 4 directions
 fromLeft = np.zeros((rows,cols,dispLevels),dtype=np.int32)
@@ -52,31 +51,31 @@ fromDown = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 
 # Compute minimum cost paths for left to right direction
 for x in range(cols-1):
-    sumCosts = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:] + smoothnessCosts3H
+    sumCosts = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=1)[:,np.newaxis]
-    fromLeft[:,x+1,:] = normalizedCosts
+    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
+    fromLeft[:,x+1,:] = normalizedCosts[:,0,:]
 
 # Compute minimum cost paths for right to left direction
 for x in range(cols-1,0,-1):
-    sumCosts = (matchingCosts[:,x,:] + fromRight[:,x,:])[:,np.newaxis,:] + smoothnessCosts3H
+    sumCosts = (matchingCosts[:,x,:] + fromRight[:,x,:])[:,np.newaxis,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=1)[:,np.newaxis]
-    fromRight[:,x-1,:] = normalizedCosts
+    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
+    fromRight[:,x-1,:] = normalizedCosts[:,0,:]
 
 # Compute minimum cost paths for up to down direction
 for y in range(rows-1):
-    sumCosts = (matchingCosts[y,:,:] + fromUp[y,:,:])[np.newaxis,:,:] + smoothnessCosts3V
-    minSumCosts = np.amin(sumCosts,axis=2).T
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=1)[:,np.newaxis]
-    fromUp[y+1,:,:] = normalizedCosts
+    sumCosts = (matchingCosts[y,:,:] + fromUp[y,:,:])[np.newaxis,:,:,np.newaxis] + smoothnessCosts4d
+    minSumCosts = np.amin(sumCosts,axis=2)
+    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
+    fromUp[y+1,:,:] = normalizedCosts[0,:,:]
 
 # Compute minimum cost paths for down to up direction
 for y in range(rows-1,0,-1):
-    sumCosts = (matchingCosts[y,:,:] + fromDown[y,:,:])[np.newaxis,:,:] + smoothnessCosts3V
-    minSumCosts = np.amin(sumCosts,axis=2).T
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=1)[:,np.newaxis]
-    fromDown[y-1,:,:] = normalizedCosts
+    sumCosts = (matchingCosts[y,:,:] + fromDown[y,:,:])[np.newaxis,:,:,np.newaxis] + smoothnessCosts4d
+    minSumCosts = np.amin(sumCosts,axis=2)
+    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
+    fromDown[y-1,:,:] = normalizedCosts[0,:,:]
 
 # Compute total costs
 totalCosts = fromLeft + fromRight + fromUp + fromDown
