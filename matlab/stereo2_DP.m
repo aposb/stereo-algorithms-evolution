@@ -37,8 +37,7 @@ end
 % Compute smoothness costs
 d = 0:dispLevels-1;
 smoothnessCosts = computeSmoothnessCost(d,d.');
-smoothnessCosts3H = zeros(1,dispLevels,dispLevels,'int32');
-smoothnessCosts3H(1,:,:) = smoothnessCosts;
+smoothnessCosts4d = permute(int32(smoothnessCosts),[3 4 1 2]);
 
 % Initialize minimum cost paths and transitions for the left to right direction
 fromLeft = zeros(rows,cols,dispLevels,'int32');
@@ -46,10 +45,12 @@ transitions = zeros(rows,cols,dispLevels,'int32');
 
 % Compute minimum cost paths and transitions for left to right direction
 for x = 1:cols-1
-    sumCosts = matchingCosts(:,x,:) + fromLeft(:,x,:) + smoothnessCosts3H;
-    [minSumCosts,ind] = min(sumCosts,[],3);
-    fromLeft(:,x+1,:) = minSumCosts;
-    transitions(:,x+1,:) = ind;
+    sumCosts = matchingCosts(:,x,:) + fromLeft(:,x,:) + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
+    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
+    fromLeft(:,x+1,:) = normalizedCosts;
+    [~,ind] = min(sumCosts,[],3);
+    transitions(:,x+1,:) = permute(ind,[1 2 4 3]);
 end
 
 % Compute the disparity map - Backtracking

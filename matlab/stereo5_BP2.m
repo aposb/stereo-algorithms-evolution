@@ -38,8 +38,7 @@ end
 % Compute smoothness costs
 d = 0:dispLevels-1;
 smoothnessCosts = computeSmoothnessCost(d,d.');
-smoothnessCosts4 = zeros(1,1,dispLevels,dispLevels,'int32');
-smoothnessCosts4(1,1,:,:) = smoothnessCosts;
+smoothnessCosts4d = permute(int32(smoothnessCosts),[3 4 1 2]);
 
 % Initialize messages for the 4 directions
 fromLeft = zeros(rows,cols,dispLevels,'int32');
@@ -50,26 +49,26 @@ fromDown = zeros(rows,cols,dispLevels,'int32');
 figure
 for it = 1:iterations
     % Create messages to right
-    sumCosts = matchingCosts + fromUp + fromDown + fromLeft + smoothnessCosts4;
-    minSumCosts = squeeze(min(sumCosts,[],3));
+    sumCosts = matchingCosts + fromUp + fromDown + fromLeft + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
     normalizedCosts = minSumCosts - min(minSumCosts,[],3);
     toRight = normalizedCosts;
 
     % Create messages to left
-    sumCosts = matchingCosts + fromUp + fromDown + fromRight + smoothnessCosts4;
-    minSumCosts = squeeze(min(sumCosts,[],3));
+    sumCosts = matchingCosts + fromUp + fromDown + fromRight + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
     normalizedCosts = minSumCosts - min(minSumCosts,[],3);
     toLeft = normalizedCosts;
 
     % Create messages to down
-    sumCosts = matchingCosts + fromUp + fromRight + fromLeft + smoothnessCosts4;
-    minSumCosts = squeeze(min(sumCosts,[],3));
+    sumCosts = matchingCosts + fromUp + fromRight + fromLeft + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
     normalizedCosts = minSumCosts - min(minSumCosts,[],3);
     toDown = normalizedCosts;
 
     % Create messages to up
-    sumCosts = matchingCosts + fromDown + fromRight + fromLeft + smoothnessCosts4;
-    minSumCosts = squeeze(min(sumCosts,[],3));
+    sumCosts = matchingCosts + fromDown + fromRight + fromLeft + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
     normalizedCosts = minSumCosts - min(minSumCosts,[],3);
     toUp = normalizedCosts;
 
