@@ -1,7 +1,6 @@
 # Stereo Matching using Block Matching
 # Computes a disparity map from a rectified stereo pair using Block Matching
 
-import time
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt

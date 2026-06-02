@@ -1,7 +1,6 @@
 # Stereo Matching using Belief Propagation (Synchronous)
 # Computes a disparity map from a rectified stereo pair using Belief Propagation (Synchronous)
 
-import time
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
@@ -17,6 +16,13 @@ computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute diffe
 
 # Define smoothness cost function
 computeSmoothnessCost = lambda d1,d2: lambda_*np.minimum(np.absolute(d1-d2),trunc)
+
+# Compute messages
+def computeMinSumCosts(costs):
+    sumCosts = costs[:,:,:,np.newaxis] + smoothnessCosts4d
+    minSumCosts = np.amin(sumCosts,axis=2)
+    minSumCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis] #normalize messages
+    return minSumCosts
 
 # Load left and right images in grayscale
 leftImg = cv.imread("left.png",cv.IMREAD_GRAYSCALE)
@@ -52,28 +58,20 @@ fromDown = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 
 for it in range(iterations):
     # Create messages to right
-    sumCosts = (matchingCosts + fromUp + fromDown + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
-    toRight = normalizedCosts
+    costs = matchingCosts + fromLeft + fromUp + fromDown
+    toRight = computeMinSumCosts(costs)
 
     # Create messages to left
-    sumCosts = (matchingCosts + fromUp + fromDown + fromRight)[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
-    toLeft = normalizedCosts
+    costs = matchingCosts + fromRight + fromUp + fromDown
+    toLeft = computeMinSumCosts(costs)
 
     # Create messages to down
-    sumCosts = (matchingCosts + fromUp + fromRight + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
-    toDown = normalizedCosts
+    costs = matchingCosts + fromUp + fromLeft + fromRight
+    toDown = computeMinSumCosts(costs)
 
     # Create messages to up
-    sumCosts = (matchingCosts + fromDown + fromRight + fromLeft)[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
-    toUp = normalizedCosts
+    costs = matchingCosts + fromDown + fromLeft + fromRight
+    toUp = computeMinSumCosts(costs)
 
     # Send all messages
     fromLeft = np.roll(toRight,1,1) #shift right

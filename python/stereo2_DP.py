@@ -1,7 +1,6 @@
 # Stereo Matching using Dynamic Programming
 # Computes a disparity map from a rectified stereo pair using Dynamic Programming
 
-import time
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
@@ -16,6 +15,14 @@ computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute diffe
 
 # Define smoothness cost function
 computeSmoothnessCost = lambda d1,d2: lambda_*np.minimum(np.absolute(d1-d2),trunc)
+
+# Compute minimum cost paths and transitions
+def computeMinSumCosts(costs):
+    sumCosts = costs[:,:,:,np.newaxis] + smoothnessCosts4d
+    minSumCosts = np.amin(sumCosts,axis=2)
+    minSumCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis] #normalize costs
+    transitions = np.argmin(sumCosts,axis=2)
+    return minSumCosts,transitions
 
 # Load left and right images in grayscale
 leftImg = cv.imread("left.png",cv.IMREAD_GRAYSCALE)
@@ -49,12 +56,10 @@ transitions = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 
 # Compute minimum cost paths and transitions for left to right direction
 for x in range(cols-1):
-    sumCosts = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
-    normalizedCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis]
-    fromLeft[:,x+1,:] = normalizedCosts[:,0,:]
-    ind = np.argmin(sumCosts,axis=2)
-    transitions[:,x+1,:] = ind[:,0,:]
+    costs = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:]
+    C,T = computeMinSumCosts(costs)
+    fromLeft[:,x+1,:] = C[:,0,:]
+    transitions[:,x+1,:] = T[:,0,:]
 
 # Compute the disparity map - Backtracking
 dispMap = np.zeros((rows,cols))
