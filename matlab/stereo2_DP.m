@@ -1,6 +1,8 @@
 % Stereo Matching using Dynamic Programming
 % Computes a disparity map from a rectified stereo pair using Dynamic Programming
 
+global smoothnessCosts4d
+
 % Set parameters
 dispLevels = 16; %disparity range: 0 to dispLevels-1
 lambda = 5; %weight of smoothness cost
@@ -45,12 +47,10 @@ transitions = zeros(rows,cols,dispLevels,'int32');
 
 % Compute minimum cost paths and transitions for left to right direction
 for x = 1:cols-1
-    sumCosts = matchingCosts(:,x,:) + fromLeft(:,x,:) + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    fromLeft(:,x+1,:) = normalizedCosts;
-    [~,ind] = min(sumCosts,[],3);
-    transitions(:,x+1,:) = permute(ind,[1 2 4 3]);
+    costs = matchingCosts(:,x,:) + fromLeft(:,x,:);
+    [C,T] = computeMinSumCosts(costs);
+    fromLeft(:,x+1,:) = C;
+    transitions(:,x+1,:) = T;
 end
 
 % Compute the disparity map - Backtracking
@@ -70,3 +70,13 @@ figure; imshow(dispImg)
 
 % Save disparity map
 imwrite(dispImg,'disparity2_DP.png')
+
+% Compute minimum cost paths and transitions
+function [minSumCosts,transitions] = computeMinSumCosts(costs)
+    global smoothnessCosts4d
+    sumCosts = costs + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
+    minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize costs
+    [~,ind] = min(sumCosts,[],3);
+    transitions = permute(ind,[1 2 4 3]);
+end

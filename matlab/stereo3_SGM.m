@@ -1,6 +1,8 @@
 % Stereo Matching using Semi-Global Matching
 % Computes a disparity map from a rectified stereo pair using Semi-Global Matching
 
+global smoothnessCosts4d
+
 % Set parameters
 dispLevels = 16; %disparity range: 0 to dispLevels-1
 lambda = 5; %weight of smoothness cost
@@ -47,34 +49,26 @@ fromDown = zeros(rows,cols,dispLevels,'int32');
 
 % Compute minimum cost paths for left to right direction
 for x = 1:cols-1
-    sumCosts = matchingCosts(:,x,:) + fromLeft(:,x,:) + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    fromLeft(:,x+1,:) = normalizedCosts;
+    costs = matchingCosts(:,x,:) + fromLeft(:,x,:);
+    fromLeft(:,x+1,:) = computeMinSumCosts(costs);
 end
 
 % Compute minimum cost paths for right to left direction
 for x = cols:-1:2
-    sumCosts = matchingCosts(:,x,:) + fromRight(:,x,:) + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    fromRight(:,x-1,:) = normalizedCosts;
+    costs = matchingCosts(:,x,:) + fromRight(:,x,:);
+    fromRight(:,x-1,:) = computeMinSumCosts(costs);
 end
 
 % Compute minimum cost paths for up to down direction
 for y = 1:rows-1
-    sumCosts = matchingCosts(y,:,:) + fromUp(y,:,:) + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    fromUp(y+1,:,:) = normalizedCosts;
+    costs = matchingCosts(y,:,:) + fromUp(y,:,:);
+    fromUp(y+1,:,:) = computeMinSumCosts(costs);
 end
 
 % Compute minimum cost paths for down to up direction
 for y = rows:-1:2
-    sumCosts = matchingCosts(y,:,:) + fromDown(y,:,:) + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    fromDown(y-1,:,:) = normalizedCosts;
+    costs = matchingCosts(y,:,:) + fromDown(y,:,:);
+    fromDown(y-1,:,:) = computeMinSumCosts(costs);
 end
 
 % Compute total costs
@@ -93,3 +87,11 @@ figure; imshow(dispImg)
 
 % Save disparity map
 imwrite(dispImg,'disparity3_SGM.png')
+
+% Compute minimum cost paths
+function minSumCosts = computeMinSumCosts(costs)
+    global smoothnessCosts4d
+    sumCosts = costs + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
+    minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize costs
+end

@@ -1,6 +1,8 @@
 % Stereo Matching using Belief Propagation (Synchronous)
 % Computes a disparity map from a rectified stereo pair using Belief Propagation (Synchronous)
 
+global smoothnessCosts4d
+
 % Set parameters
 dispLevels = 16; %disparity range: 0 to dispLevels-1
 lambda = 5; %weight of smoothness cost
@@ -49,28 +51,20 @@ fromDown = zeros(rows,cols,dispLevels,'int32');
 figure
 for it = 1:iterations
     % Create messages to right
-    sumCosts = matchingCosts + fromUp + fromDown + fromLeft + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    toRight = normalizedCosts;
+    costs = matchingCosts + fromLeft + fromUp + fromDown;
+    toRight = computeMinSumCosts(costs);
 
     % Create messages to left
-    sumCosts = matchingCosts + fromUp + fromDown + fromRight + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    toLeft = normalizedCosts;
+    costs = matchingCosts + fromRight + fromUp + fromDown;
+    toLeft = computeMinSumCosts(costs);
 
     % Create messages to down
-    sumCosts = matchingCosts + fromUp + fromRight + fromLeft + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    toDown = normalizedCosts;
+    costs = matchingCosts + fromUp + fromLeft + fromRight;
+    toDown = computeMinSumCosts(costs);
 
     % Create messages to up
-    sumCosts = matchingCosts + fromDown + fromRight + fromLeft + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    normalizedCosts = minSumCosts - min(minSumCosts,[],3);
-    toUp = normalizedCosts;
+    costs = matchingCosts + fromDown + fromLeft + fromRight;
+    toUp = computeMinSumCosts(costs);
 
     % Send all messages
     fromLeft = circshift(toRight,1,2); %shift right
@@ -98,3 +92,11 @@ end
 
 % Save disparity map
 imwrite(dispImg,'disparity5_BP2.png')
+
+% Compute messages
+function minSumCosts = computeMinSumCosts(costs)
+    global smoothnessCosts4d
+    sumCosts = costs + smoothnessCosts4d;
+    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
+    minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize messages
+end
