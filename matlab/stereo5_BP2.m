@@ -1,13 +1,13 @@
-% Stereo Matching using Belief Propagation (Synchronous)
+% Stereo Matching using Belief Propagation (Synchronous) - smoothness cost function approach
 % Computes a disparity map from a rectified stereo pair using Belief Propagation (Synchronous)
 
 global smoothnessCosts4d
 
 % Set parameters
 dispLevels = 16; %disparity range: 0 to dispLevels-1
-lambda = 5; %weight of smoothness cost
-trunc = 4; %truncation of smoothness cost
-iterations = 80;
+lambda = 10; %weight of smoothness cost
+trunc = 2; %truncation of smoothness cost
+iterations = 60;
 
 % Define matching cost function
 computeMatchingCost = @(left,right) abs(left-right); %absolute differences

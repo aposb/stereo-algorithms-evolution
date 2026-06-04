@@ -1,12 +1,12 @@
-% Stereo Matching using Dynamic Programming
+% Stereo Matching using Dynamic Programming - smoothness cost function approach
 % Computes a disparity map from a rectified stereo pair using Dynamic Programming
 
 global smoothnessCosts4d
 
 % Set parameters
 dispLevels = 16; %disparity range: 0 to dispLevels-1
-lambda = 5; %weight of smoothness cost
-trunc = 4; %truncation of smoothness cost
+lambda = 10; %weight of smoothness cost
+trunc = 2; %truncation of smoothness cost
 
 % Define matching cost function
 computeMatchingCost = @(left,right) abs(left-right); %absolute differences
@@ -78,5 +78,5 @@ function [minSumCosts,transitions] = computeMinSumCosts(costs)
     minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
     minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize costs
     [~,ind] = min(sumCosts,[],3);
-    transitions = permute(ind,[1 2 4 3]);
+    transitions = int32(permute(ind,[1 2 4 3]));
 end
