@@ -1,4 +1,4 @@
-# Stereo Matching using Dynamic Programming
+# Stereo Matching using Dynamic Programming - smoothness cost function approach
 # Computes a disparity map from a rectified stereo pair using Dynamic Programming
 
 import numpy as np
@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 # Set parameters
 dispLevels = 16 #disparity range: 0 to dispLevels-1
-lambda_ = 5 #weight of smoothness cost
-trunc = 4 #truncation of smoothness cost
+lambda_ = 10 #weight of smoothness cost
+trunc = 2 #truncation of smoothness cost
 
 # Define matching cost function
 computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute differences
@@ -21,7 +21,7 @@ def computeMinSumCosts(costs):
     sumCosts = costs[:,:,:,np.newaxis] + smoothnessCosts4d
     minSumCosts = np.amin(sumCosts,axis=2)
     minSumCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis] #normalize costs
-    transitions = np.argmin(sumCosts,axis=2)
+    transitions = np.argmin(sumCosts,axis=2).astype(np.int32)
     return minSumCosts,transitions
 
 # Load left and right images in grayscale

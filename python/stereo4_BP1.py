@@ -1,4 +1,4 @@
-# Stereo Matching using Belief Propagation (Sequential)
+# Stereo Matching using Belief Propagation (Sequential) - smoothness cost function approach
 # Computes a disparity map from a rectified stereo pair using Belief Propagation (Sequential)
 
 import numpy as np
@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 # Set parameters
 dispLevels = 16 #disparity range: 0 to dispLevels-1
-lambda_ = 5 #weight of smoothness cost
-trunc = 4 #truncation of smoothness cost
+lambda_ = 10 #weight of smoothness cost
+trunc = 2 #truncation of smoothness cost
 iterations = 20
 
 # Define matching cost function
