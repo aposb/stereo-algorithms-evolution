@@ -9,10 +9,10 @@ Stereo matching algorithms:
 1. **Block Matching**
 2. **Dynamic Programming**
 3. **Semi-Global Matching**
-4. **Belief Propagation (Sequential)**
+4. **Belief Propagation (Directional)**
 5. **Belief Propagation (Synchronous)**
 
-Two different approaches to calculating smoothnes costs.
+Two different approaches to calculating smoothness costs.
 
 All algorithms are implemented in both MATLAB and Python.
 
@@ -28,7 +28,7 @@ Uses a function to calculate the smoothness cost (BP-Like).
 | 1 | Block Matching | **[`stereo1_BM.m`](./matlab/stereo1_BM.m)** | **[`stereo1_BM.py`](./python/stereo1_BM.py)** |
 | 2 | Dynamic Programming | **[`stereo2_DP.m`](./matlab/stereo2_DP.m)** | **[`stereo2_DP.py`](./python/stereo2_DP.py)** |
 | 3 | Semi-Global Matching | **[`stereo3_SGM.m`](./matlab/stereo3_SGM.m)** | **[`stereo3_SGM.py`](./python/stereo3_SGM.py)** |
-| 4 | Belief Propagation (Sequential) | **[`stereo4_BP1.m`](./matlab/stereo4_BP1.m)** | **[`stereo4_BP1.py`](./python/stereo4_BP1.py)** |
+| 4 | Belief Propagation (Directional) | **[`stereo4_BP1.m`](./matlab/stereo4_BP1.m)** | **[`stereo4_BP1.py`](./python/stereo4_BP1.py)** |
 | 5 | Belief Propagation (Synchronous) | **[`stereo5_BP2.m`](./matlab/stereo5_BP2.m)** | **[`stereo5_BP2.py`](./python/stereo5_BP2.py)** |
 
 ### Approach B
@@ -39,7 +39,7 @@ Uses the parameters p1 and p2 to set occlusion penalties (SGM-Like).
 | 1 | Block Matching | **[`stereo1_BM.m`](./matlab/stereo1_BM.m)** | **[`stereo1_BM.py`](./python/stereo1_BM.py)** |
 | 2 | Dynamic Programming | **[`stereo2b_DP.m`](./matlab/stereo2b_DP.m)** | **[`stereo2b_DP.py`](./python/stereo2b_DP.py)** |
 | 3 | Semi-Global Matching | **[`stereo3b_SGM.m`](./matlab/stereo3b_SGM.m)** | **[`stereo3b_SGM.py`](./python/stereo3b_SGM.py)** |
-| 4 | Belief Propagation (Sequential) | **[`stereo4b_BP1.m`](./matlab/stereo4b_BP1.m)** | **[`stereo4b_BP1.py`](./python/stereo4b_BP1.py)** |
+| 4 | Belief Propagation (Directional) | **[`stereo4b_BP1.m`](./matlab/stereo4b_BP1.m)** | **[`stereo4b_BP1.py`](./python/stereo4b_BP1.py)** |
 | 5 | Belief Propagation (Synchronous) | **[`stereo5b_BP2.m`](./matlab/stereo5b_BP2.m)** | **[`stereo5b_BP2.py`](./python/stereo5b_BP2.py)** |
 
 ## Installation
@@ -80,9 +80,9 @@ Below are the disparity maps produced from the **Tsukuba stereo pair**.
 
 ![Semi-Global Matching Disparity Map](results/disparity3_SGM.png)
 
-### Belief Propagation (Sequential)
+### Belief Propagation (Directional)
 
-![Belief Propagation (Sequential) Disparity Map](results/disparity4_BP1.png)
+![Belief Propagation (Directional) Disparity Map](results/disparity4_BP1.png)
 
 ### Belief Propagation (Synchronous)
 
@@ -91,7 +91,7 @@ Below are the disparity maps produced from the **Tsukuba stereo pair**.
 ## Links
 
 ### Project Repository
-- https://github.com/aposb/stereo-algorithms-evolution
+- [Basic Stereo Algorithms Evolution](https://github.com/aposb/stereo-algorithms-evolution)
 
 ### Related Projects
 - [Stereo Matching Algorithms in MATLAB and Python](https://github.com/aposb/stereo-matching-algorithms)

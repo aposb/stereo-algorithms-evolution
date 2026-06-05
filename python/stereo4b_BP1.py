@@ -1,4 +1,4 @@
-# Stereo Matching using Belief Propagation (Sequential) - occlusion penalties approach
+# Stereo Matching using Belief Propagation (Directional) - occlusion penalties approach
 # Computes a disparity map from a rectified stereo pair using Belief Propagation (Sequential)
 
 import numpy as np
