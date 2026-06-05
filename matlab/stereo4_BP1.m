@@ -1,5 +1,5 @@
 % Stereo Matching using Belief Propagation (Directional) - smoothness cost function approach
-% Computes a disparity map from a rectified stereo pair using Belief Propagation (Sequential)
+% Computes a disparity map from a rectified stereo pair using Belief Propagation (Directional)
 
 global smoothnessCosts4d
 
