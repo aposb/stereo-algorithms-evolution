@@ -1,4 +1,4 @@
-# Basic Stereo Algorithms Evolution
+# Basic Stereo Algorithms (Evolution)
 
 The basic stereoscopic algorithms have many similarities to each other and can be considered, in a way, that each algorithm is an evolution of another. In this project we created simplified forms of some basic stereoscopic algorithms in MATLAB and Python. The code has been adapted to show the improvement and evolution of an algorithm from the previous one. Compare the source code to see the improvements.
 
@@ -91,7 +91,7 @@ Below are the disparity maps produced from the **Tsukuba stereo pair**.
 ## Links
 
 ### Project Repository
-- [Basic Stereo Algorithms Evolution](https://github.com/aposb/stereo-algorithms-evolution)
+- [Basic Stereo Algorithms (Evolution)](https://github.com/aposb/stereo-algorithms-evolution)
 
 ### Related Projects
 - [Stereo Matching Algorithms in MATLAB and Python](https://github.com/aposb/stereo-matching-algorithms)
