@@ -42,25 +42,25 @@ fromDown = zeros(rows,cols,dispLevels,'int32');
 % Compute minimum cost paths for left to right direction
 for x = 1:cols-1
     costs = matchingCosts(:,x,:) + fromLeft(:,x,:);
-    fromLeft(:,x+1,:) = computeMinSumCosts(costs);
+    fromLeft(:,x+1,:) = computeDirectionalCosts(costs);
 end
 
 % Compute minimum cost paths for right to left direction
 for x = cols:-1:2
     costs = matchingCosts(:,x,:) + fromRight(:,x,:);
-    fromRight(:,x-1,:) = computeMinSumCosts(costs);
+    fromRight(:,x-1,:) = computeDirectionalCosts(costs);
 end
 
 % Compute minimum cost paths for up to down direction
 for y = 1:rows-1
     costs = matchingCosts(y,:,:) + fromUp(y,:,:);
-    fromUp(y+1,:,:) = computeMinSumCosts(costs);
+    fromUp(y+1,:,:) = computeDirectionalCosts(costs);
 end
 
 % Compute minimum cost paths for down to up direction
 for y = rows:-1:2
     costs = matchingCosts(y,:,:) + fromDown(y,:,:);
-    fromDown(y-1,:,:) = computeMinSumCosts(costs);
+    fromDown(y-1,:,:) = computeDirectionalCosts(costs);
 end
 
 % Compute total costs
@@ -81,14 +81,14 @@ figure; imshow(dispImg)
 imwrite(dispImg,'disparity3b_SGM.png')
 
 % Compute minimum cost paths
-function minSumCosts = computeMinSumCosts(costs)
+function output = computeDirectionalCosts(input)
     global p1 p2
-    minCosts = min(costs,[],3);
-    sumCosts = zeros([size(costs),4],'int32');
-    sumCosts(:,:,:,1) = costs;
-    sumCosts(:,:,:,2) = circshift(costs,1,3) + p1; sumCosts(:,:,1,2) = intmax;
-    sumCosts(:,:,:,3) = circshift(costs,-1,3) + p1; sumCosts(:,:,end,3) = intmax;
-    sumCosts(:,:,:,4) = minCosts + p2 + zeros(size(costs),'int32');
-    minSumCosts = min(sumCosts,[],4);
-    minSumCosts = minSumCosts - minCosts; %normalize costs
+    minInput = min(input,[],3);
+    possibleOutput = zeros([size(input),4],'int32');
+    possibleOutput(:,:,:,1) = input;
+    possibleOutput(:,:,:,2) = circshift(input,1,3) + p1; possibleOutput(:,:,1,2) = intmax;
+    possibleOutput(:,:,:,3) = circshift(input,-1,3) + p1; possibleOutput(:,:,end,3) = intmax;
+    possibleOutput(:,:,:,4) = minInput + p2 + zeros(size(input),'int32');
+    output = min(possibleOutput,[],4);
+    output = output - minInput; %normalize costs
 end

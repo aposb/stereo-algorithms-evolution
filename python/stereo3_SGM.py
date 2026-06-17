@@ -17,9 +17,9 @@ computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute diffe
 computeSmoothnessCost = lambda d1,d2: lambda_*np.minimum(np.absolute(d1-d2),trunc)
 
 # Compute minimum cost paths
-def computeMinSumCosts(costs):
-    sumCosts = costs[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
+def computeDirectionalCosts(input_):
+    sum_ = input_[:,:,:,np.newaxis] + smoothnessCosts4d
+    minSumCosts = np.amin(sum_,axis=2)
     minSumCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis] #normalize costs
     return minSumCosts
 
@@ -58,22 +58,22 @@ fromDown = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 # Compute minimum cost paths for left to right direction
 for x in range(cols-1):
     costs = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:]
-    fromLeft[:,x+1,:] = computeMinSumCosts(costs)[:,0,:]
+    fromLeft[:,x+1,:] = computeDirectionalCosts(costs)[:,0,:]
 
 # Compute minimum cost paths for right to left direction
 for x in range(cols-1,0,-1):
     costs = (matchingCosts[:,x,:] + fromRight[:,x,:])[:,np.newaxis,:]
-    fromRight[:,x-1,:] = computeMinSumCosts(costs)[:,0,:]
+    fromRight[:,x-1,:] = computeDirectionalCosts(costs)[:,0,:]
 
 # Compute minimum cost paths for up to down direction
 for y in range(rows-1):
     costs = (matchingCosts[y,:,:] + fromUp[y,:,:])[np.newaxis,:,:]
-    fromUp[y+1,:,:] = computeMinSumCosts(costs)[0,:,:]
+    fromUp[y+1,:,:] = computeDirectionalCosts(costs)[0,:,:]
 
 # Compute minimum cost paths for down to up direction
 for y in range(rows-1,0,-1):
     costs = (matchingCosts[y,:,:] + fromDown[y,:,:])[np.newaxis,:,:]
-    fromDown[y-1,:,:] = computeMinSumCosts(costs)[0,:,:]
+    fromDown[y-1,:,:] = computeDirectionalCosts(costs)[0,:,:]
 
 # Compute total costs
 totalCosts = fromLeft + fromRight + fromUp + fromDown

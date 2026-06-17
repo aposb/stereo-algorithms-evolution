@@ -45,25 +45,25 @@ for it = 1:iterations
     % Left to right pass (horizontal forward) - Send messages right
     for x = 1:cols-1
         costs = matchingCosts(:,x,:) + fromLeft(:,x,:) + fromUp(:,x,:) + fromDown(:,x,:);
-        fromLeft(:,x+1,:) = computeMinSumCosts(costs);
+        fromLeft(:,x+1,:) = computeDirectionalCosts(costs);
     end
 
     % Right to left pass (horizontal backward) - Send messages left
     for x = cols:-1:2
         costs = matchingCosts(:,x,:) + fromRight(:,x,:) + fromUp(:,x,:) + fromDown(:,x,:);
-        fromRight(:,x-1,:) = computeMinSumCosts(costs);
+        fromRight(:,x-1,:) = computeDirectionalCosts(costs);
     end
 
     % Up to down pass (vertical forward) - Send messages down
     for y = 1:rows-1
         costs = matchingCosts(y,:,:) + fromUp(y,:,:) + fromLeft(y,:,:) + fromRight(y,:,:);
-        fromUp(y+1,:,:) = computeMinSumCosts(costs);
+        fromUp(y+1,:,:) = computeDirectionalCosts(costs);
     end
 
     % Down to up pass (vertical backward) - Send messages up
     for y = rows:-1:2
         costs = matchingCosts(y,:,:) + fromDown(y,:,:) + fromLeft(y,:,:) + fromRight(y,:,:);
-        fromDown(y-1,:,:) = computeMinSumCosts(costs);
+        fromDown(y-1,:,:) = computeDirectionalCosts(costs);
     end
 
     % Compute total costs (belief)
@@ -88,14 +88,14 @@ end
 imwrite(dispImg,'disparity4b_BP1.png')
 
 % Compute messages
-function minSumCosts = computeMinSumCosts(costs)
+function output = computeDirectionalCosts(input)
     global p1 p2
-    minCosts = min(costs,[],3);
-    sumCosts = zeros([size(costs),4],'int32');
-    sumCosts(:,:,:,1) = costs;
-    sumCosts(:,:,:,2) = circshift(costs,1,3) + p1; sumCosts(:,:,1,2) = intmax;
-    sumCosts(:,:,:,3) = circshift(costs,-1,3) + p1; sumCosts(:,:,end,3) = intmax;
-    sumCosts(:,:,:,4) = minCosts + p2 + zeros(size(costs),'int32');
-    minSumCosts = min(sumCosts,[],4);
-    minSumCosts = minSumCosts - minCosts; %normalize messages
+    minInput = min(input,[],3);
+    possibleOutput = zeros([size(input),4],'int32');
+    possibleOutput(:,:,:,1) = input;
+    possibleOutput(:,:,:,2) = circshift(input,1,3) + p1; possibleOutput(:,:,1,2) = intmax;
+    possibleOutput(:,:,:,3) = circshift(input,-1,3) + p1; possibleOutput(:,:,end,3) = intmax;
+    possibleOutput(:,:,:,4) = minInput + p2 + zeros(size(input),'int32');
+    output = min(possibleOutput,[],4);
+    output = output - minInput; %normalize messages
 end

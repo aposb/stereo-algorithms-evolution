@@ -50,25 +50,25 @@ fromDown = zeros(rows,cols,dispLevels,'int32');
 % Compute minimum cost paths for left to right direction
 for x = 1:cols-1
     costs = matchingCosts(:,x,:) + fromLeft(:,x,:);
-    fromLeft(:,x+1,:) = computeMinSumCosts(costs);
+    fromLeft(:,x+1,:) = computeDirectionalCosts(costs);
 end
 
 % Compute minimum cost paths for right to left direction
 for x = cols:-1:2
     costs = matchingCosts(:,x,:) + fromRight(:,x,:);
-    fromRight(:,x-1,:) = computeMinSumCosts(costs);
+    fromRight(:,x-1,:) = computeDirectionalCosts(costs);
 end
 
 % Compute minimum cost paths for up to down direction
 for y = 1:rows-1
     costs = matchingCosts(y,:,:) + fromUp(y,:,:);
-    fromUp(y+1,:,:) = computeMinSumCosts(costs);
+    fromUp(y+1,:,:) = computeDirectionalCosts(costs);
 end
 
 % Compute minimum cost paths for down to up direction
 for y = rows:-1:2
     costs = matchingCosts(y,:,:) + fromDown(y,:,:);
-    fromDown(y-1,:,:) = computeMinSumCosts(costs);
+    fromDown(y-1,:,:) = computeDirectionalCosts(costs);
 end
 
 % Compute total costs
@@ -89,9 +89,9 @@ figure; imshow(dispImg)
 imwrite(dispImg,'disparity3_SGM.png')
 
 % Compute minimum cost paths
-function minSumCosts = computeMinSumCosts(costs)
+function output = computeDirectionalCosts(input)
     global smoothnessCosts4d
-    sumCosts = costs + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize costs
+    sum = input + smoothnessCosts4d;
+    output = permute(min(sum,[],3),[1 2 4 3]);
+    output = output - min(output,[],3); %normalize costs
 end

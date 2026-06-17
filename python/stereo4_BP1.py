@@ -18,9 +18,9 @@ computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute diffe
 computeSmoothnessCost = lambda d1,d2: lambda_*np.minimum(np.absolute(d1-d2),trunc)
 
 # Compute messages
-def computeMinSumCosts(costs):
-    sumCosts = costs[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
+def computeDirectionalCosts(input_):
+    sum_ = input_[:,:,:,np.newaxis] + smoothnessCosts4d
+    minSumCosts = np.amin(sum_,axis=2)
     minSumCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis] #normalize messages
     return minSumCosts
 
@@ -60,22 +60,22 @@ for it in range(iterations):
     # Left to right pass (horizontal forward) - Send messages right
     for x in range(cols-1):
         costs = (matchingCosts[:,x,:] + fromLeft[:,x,:] + fromUp[:,x,:] + fromDown[:,x,:])[:,np.newaxis,:]
-        fromLeft[:,x+1,:] = computeMinSumCosts(costs)[:,0,:]
+        fromLeft[:,x+1,:] = computeDirectionalCosts(costs)[:,0,:]
 
     # Right to left pass (horizontal backward) - Send messages left
     for x in range(cols-1,0,-1):
         costs = (matchingCosts[:,x,:] + fromRight[:,x,:] + fromUp[:,x,:] + fromDown[:,x,:])[:,np.newaxis,:]
-        fromRight[:,x-1,:] = computeMinSumCosts(costs)[:,0,:]
+        fromRight[:,x-1,:] = computeDirectionalCosts(costs)[:,0,:]
 
     # Up to down pass (vertical forward) - Send messages down
     for y in range(rows-1):
         costs = (matchingCosts[y,:,:] + fromUp[y,:,:] + fromLeft[y,:,:] + fromRight[y,:,:])[np.newaxis,:,:]
-        fromUp[y+1,:,:] = computeMinSumCosts(costs)[0,:,:]
+        fromUp[y+1,:,:] = computeDirectionalCosts(costs)[0,:,:]
 
     # Down to up pass (vertical backward) - Send messages up
     for y in range(rows-1,0,-1):
         costs = (matchingCosts[y,:,:] + fromDown[y,:,:] + fromLeft[y,:,:] + fromRight[y,:,:])[np.newaxis,:,:]
-        fromDown[y-1,:,:] = computeMinSumCosts(costs)[0,:,:]
+        fromDown[y-1,:,:] = computeDirectionalCosts(costs)[0,:,:]
 
     # Compute total costs (belief)
     totalCosts = fromLeft + fromRight + fromUp + fromDown

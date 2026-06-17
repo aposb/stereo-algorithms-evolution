@@ -18,9 +18,9 @@ computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute diffe
 computeSmoothnessCost = lambda d1,d2: lambda_*np.minimum(np.absolute(d1-d2),trunc)
 
 # Compute messages
-def computeMinSumCosts(costs):
-    sumCosts = costs[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
+def computeDirectionalCosts(input_):
+    sum_ = input_[:,:,:,np.newaxis] + smoothnessCosts4d
+    minSumCosts = np.amin(sum_,axis=2)
     minSumCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis] #normalize messages
     return minSumCosts
 
@@ -59,19 +59,19 @@ fromDown = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 for it in range(iterations):
     # Create messages to right
     costs = matchingCosts + fromLeft + fromUp + fromDown
-    toRight = computeMinSumCosts(costs)
+    toRight = computeDirectionalCosts(costs)
 
     # Create messages to left
     costs = matchingCosts + fromRight + fromUp + fromDown
-    toLeft = computeMinSumCosts(costs)
+    toLeft = computeDirectionalCosts(costs)
 
     # Create messages to down
     costs = matchingCosts + fromUp + fromLeft + fromRight
-    toDown = computeMinSumCosts(costs)
+    toDown = computeDirectionalCosts(costs)
 
     # Create messages to up
     costs = matchingCosts + fromDown + fromLeft + fromRight
-    toUp = computeMinSumCosts(costs)
+    toUp = computeDirectionalCosts(costs)
 
     # Send all messages
     fromLeft = np.roll(toRight,1,1) #shift right

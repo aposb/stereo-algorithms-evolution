@@ -40,7 +40,7 @@ transitions = zeros(rows,cols,dispLevels,'int32');
 % Compute minimum cost paths and transitions for left to right direction
 for x = 1:cols-1
     costs = matchingCosts(:,x,:) + fromLeft(:,x,:);
-    [C,T] = computeMinSumCosts(costs);
+    [C,T] = computeDirectionalCosts(costs);
     fromLeft(:,x+1,:) = C;
     transitions(:,x+1,:) = T;
 end
@@ -64,21 +64,22 @@ figure; imshow(dispImg)
 imwrite(dispImg,'disparity2b_DP.png')
 
 % Compute minimum cost paths and transitions
-function [minSumCosts,transitions] = computeMinSumCosts(costs)
+function [output,transitions] = computeDirectionalCosts(input)
     global p1 p2
-    [minCosts,minCostsTransitions] = min(costs,[],3);
-    sumCosts = zeros([size(costs),4],'int32');
-    sumCosts(:,:,:,1) = costs;
-    sumCosts(:,:,:,2) = circshift(costs,1,3) + p1; sumCosts(:,:,1,2) = intmax;
-    sumCosts(:,:,:,3) = circshift(costs,-1,3) + p1; sumCosts(:,:,end,3) = intmax;
-    sumCosts(:,:,:,4) = minCosts + p2 + zeros(size(costs),'int32');
-    [minSumCosts,ind] = min(sumCosts,[],4);
-    minSumCosts = minSumCosts - minCosts; %normalize costs
-    match = permute(int32(1:size(costs,3)),[3 1 2]) + zeros(size(costs),'int32');
-    minCostsTransitions3d = int32(minCostsTransitions) + zeros(size(costs),'int32');
-    transitions = zeros(size(costs),'int32');
+    [minInput,ind0] = min(input,[],3);
+    possibleOutput = zeros([size(input),4],'int32');
+    possibleOutput(:,:,:,1) = input;
+    possibleOutput(:,:,:,2) = circshift(input,1,3) + p1; possibleOutput(:,:,1,2) = intmax;
+    possibleOutput(:,:,:,3) = circshift(input,-1,3) + p1; possibleOutput(:,:,end,3) = intmax;
+    possibleOutput(:,:,:,4) = minInput + p2 + zeros(size(input),'int32');
+    [output,ind] = min(possibleOutput,[],4);
+    output = output - minInput; %normalize costs
+    match = permute(int32(1:size(input,3)),[3 1 2]) + zeros(size(input),'int32');
+    near1 = match-1; near2 = match+1;
+    far = int32(ind0) + zeros(size(input),'int32');
+    transitions = zeros(size(input),'int32');
     transitions(ind==1) = match(ind==1);
-    transitions(ind==2) = match(ind==2)-1;
-    transitions(ind==3) = match(ind==3)+1;
-    transitions(ind==4) = minCostsTransitions3d(ind==4);
+    transitions(ind==2) = near1(ind==2);
+    transitions(ind==3) = near2(ind==3);
+    transitions(ind==4) = far(ind==4);
 end

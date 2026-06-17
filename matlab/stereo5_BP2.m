@@ -52,19 +52,19 @@ figure
 for it = 1:iterations
     % Create messages to right
     costs = matchingCosts + fromLeft + fromUp + fromDown;
-    toRight = computeMinSumCosts(costs);
+    toRight = computeDirectionalCosts(costs);
 
     % Create messages to left
     costs = matchingCosts + fromRight + fromUp + fromDown;
-    toLeft = computeMinSumCosts(costs);
+    toLeft = computeDirectionalCosts(costs);
 
     % Create messages to down
     costs = matchingCosts + fromUp + fromLeft + fromRight;
-    toDown = computeMinSumCosts(costs);
+    toDown = computeDirectionalCosts(costs);
 
     % Create messages to up
     costs = matchingCosts + fromDown + fromLeft + fromRight;
-    toUp = computeMinSumCosts(costs);
+    toUp = computeDirectionalCosts(costs);
 
     % Send all messages
     fromLeft = circshift(toRight,1,2); %shift right
@@ -94,9 +94,9 @@ end
 imwrite(dispImg,'disparity5_BP2.png')
 
 % Compute messages
-function minSumCosts = computeMinSumCosts(costs)
+function output = computeDirectionalCosts(input)
     global smoothnessCosts4d
-    sumCosts = costs + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize messages
+    sum = input + smoothnessCosts4d;
+    output = permute(min(sum,[],3),[1 2 4 3]);
+    output = output - min(output,[],3); %normalize messages
 end

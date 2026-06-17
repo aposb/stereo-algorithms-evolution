@@ -16,25 +16,26 @@ p2 = 20 #occlusion penalty 2
 computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute differences
 
 # Compute minimum cost paths and transitions
-def computeMinSumCosts(costs):
-    minCosts = np.amin(costs,axis=2)
-    minCostsTransitions = np.argmin(costs,axis=2)
-    sumCosts = np.zeros((costs.shape[0],costs.shape[1],costs.shape[2],4),dtype=np.int32)
-    sumCosts[:,:,:,0] = costs
-    sumCosts[:,:,:,1] = np.roll(costs,1,2) + p1; sumCosts[:,:,0,1] = MAX_INT
-    sumCosts[:,:,:,2] = np.roll(costs,-1,2) + p1; sumCosts[:,:,-1,2] = MAX_INT
-    sumCosts[:,:,:,3] = (minCosts + p2)[:,:,np.newaxis]
-    minSumCosts = np.amin(sumCosts,axis=3)
-    ind = np.argmin(sumCosts,axis=3)
-    minSumCosts = minSumCosts - minCosts[:,:,np.newaxis] #normalize costs
-    match = np.arange(costs.shape[2])[np.newaxis,np.newaxis,:] + np.zeros(costs.shape,dtype=np.int32)
-    minCostsTransitions3d = minCostsTransitions[:,:,np.newaxis] + np.zeros(costs.shape,dtype=np.int32)
-    transitions = np.zeros(costs.shape,dtype=np.int32)
-    transitions[ind==0] = match[ind==0];
-    transitions[ind==1] = match[ind==1]-1;
-    transitions[ind==2] = match[ind==2]+1;
-    transitions[ind==3] = minCostsTransitions3d[ind==3];
-    return minSumCosts,transitions
+def computeDirectionalCosts(input_):
+    minInput = np.amin(input_,axis=2)
+    ind0 = np.argmin(input_,axis=2)
+    possibleOutput = np.zeros((input_.shape[0],input_.shape[1],input_.shape[2],4),dtype=np.int32)
+    possibleOutput[:,:,:,0] = input_
+    possibleOutput[:,:,:,1] = np.roll(input_,1,2) + p1; possibleOutput[:,:,0,1] = MAX_INT
+    possibleOutput[:,:,:,2] = np.roll(input_,-1,2) + p1; possibleOutput[:,:,-1,2] = MAX_INT
+    possibleOutput[:,:,:,3] = (minInput + p2)[:,:,np.newaxis]
+    output = np.amin(possibleOutput,axis=3)
+    ind = np.argmin(possibleOutput,axis=3)
+    output = output - minInput[:,:,np.newaxis] #normalize costs
+    match = np.arange(input_.shape[2])[np.newaxis,np.newaxis,:] + np.zeros(input_.shape,dtype=np.int32)
+    near1 = match-1; near2 = match+1
+    far = ind0[:,:,np.newaxis] + np.zeros(input_.shape,dtype=np.int32)
+    transitions = np.zeros(input_.shape,dtype=np.int32)
+    transitions[ind==0] = match[ind==0]
+    transitions[ind==1] = near1[ind==1]
+    transitions[ind==2] = near2[ind==2]
+    transitions[ind==3] = far[ind==3]
+    return output,transitions
 
 # Load left and right images in grayscale
 leftImg = cv.imread("left.png",cv.IMREAD_GRAYSCALE)
@@ -64,7 +65,7 @@ transitions = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 # Compute minimum cost paths and transitions for left to right direction
 for x in range(cols-1):
     costs = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:]
-    C,T = computeMinSumCosts(costs)
+    C,T = computeDirectionalCosts(costs)
     fromLeft[:,x+1,:] = C[:,0,:]
     transitions[:,x+1,:] = T[:,0,:]
 

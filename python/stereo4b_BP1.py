@@ -17,16 +17,16 @@ iterations = 20
 computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute differences
 
 # Compute messages
-def computeMinSumCosts(costs):
-    minCosts = np.amin(costs,axis=2)
-    sumCosts = np.zeros((costs.shape[0],costs.shape[1],costs.shape[2],4),dtype=np.int32)
-    sumCosts[:,:,:,0] = costs
-    sumCosts[:,:,:,1] = np.roll(costs,1,2) + p1; sumCosts[:,:,0,1] = MAX_INT
-    sumCosts[:,:,:,2] = np.roll(costs,-1,2) + p1; sumCosts[:,:,-1,2] = MAX_INT
-    sumCosts[:,:,:,3] = (minCosts + p2)[:,:,np.newaxis]
-    minSumCosts = np.amin(sumCosts,axis=3)
-    minSumCosts = minSumCosts - minCosts[:,:,np.newaxis] #normalize messages
-    return minSumCosts
+def computeDirectionalCosts(input_):
+    minInput = np.amin(input_,axis=2)
+    possibleOutput = np.zeros((input_.shape[0],input_.shape[1],input_.shape[2],4),dtype=np.int32)
+    possibleOutput[:,:,:,0] = input_
+    possibleOutput[:,:,:,1] = np.roll(input_,1,2) + p1; possibleOutput[:,:,0,1] = MAX_INT
+    possibleOutput[:,:,:,2] = np.roll(input_,-1,2) + p1; possibleOutput[:,:,-1,2] = MAX_INT
+    possibleOutput[:,:,:,3] = (minInput + p2)[:,:,np.newaxis]
+    output = np.amin(possibleOutput,axis=3)
+    output = output - minInput[:,:,np.newaxis] #normalize messages
+    return output
 
 # Load left and right images in grayscale
 leftImg = cv.imread("left.png",cv.IMREAD_GRAYSCALE)
@@ -59,22 +59,22 @@ for it in range(iterations):
     # Left to right pass (horizontal forward) - Send messages right
     for x in range(cols-1):
         costs = (matchingCosts[:,x,:] + fromLeft[:,x,:] + fromUp[:,x,:] + fromDown[:,x,:])[:,np.newaxis,:]
-        fromLeft[:,x+1,:] = computeMinSumCosts(costs)[:,0,:]
+        fromLeft[:,x+1,:] = computeDirectionalCosts(costs)[:,0,:]
 
     # Right to left pass (horizontal backward) - Send messages left
     for x in range(cols-1,0,-1):
         costs = (matchingCosts[:,x,:] + fromRight[:,x,:] + fromUp[:,x,:] + fromDown[:,x,:])[:,np.newaxis,:]
-        fromRight[:,x-1,:] = computeMinSumCosts(costs)[:,0,:]
+        fromRight[:,x-1,:] = computeDirectionalCosts(costs)[:,0,:]
 
     # Up to down pass (vertical forward) - Send messages down
     for y in range(rows-1):
         costs = (matchingCosts[y,:,:] + fromUp[y,:,:] + fromLeft[y,:,:] + fromRight[y,:,:])[np.newaxis,:,:]
-        fromUp[y+1,:,:] = computeMinSumCosts(costs)[0,:,:]
+        fromUp[y+1,:,:] = computeDirectionalCosts(costs)[0,:,:]
 
     # Down to up pass (vertical backward) - Send messages up
     for y in range(rows-1,0,-1):
         costs = (matchingCosts[y,:,:] + fromDown[y,:,:] + fromLeft[y,:,:] + fromRight[y,:,:])[np.newaxis,:,:]
-        fromDown[y-1,:,:] = computeMinSumCosts(costs)[0,:,:]
+        fromDown[y-1,:,:] = computeDirectionalCosts(costs)[0,:,:]
 
     # Compute total costs (belief)
     totalCosts = fromLeft + fromRight + fromUp + fromDown

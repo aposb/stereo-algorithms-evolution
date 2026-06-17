@@ -48,7 +48,7 @@ transitions = zeros(rows,cols,dispLevels,'int32');
 % Compute minimum cost paths and transitions for left to right direction
 for x = 1:cols-1
     costs = matchingCosts(:,x,:) + fromLeft(:,x,:);
-    [C,T] = computeMinSumCosts(costs);
+    [C,T] = computeDirectionalCosts(costs);
     fromLeft(:,x+1,:) = C;
     transitions(:,x+1,:) = T;
 end
@@ -72,11 +72,11 @@ figure; imshow(dispImg)
 imwrite(dispImg,'disparity2_DP.png')
 
 % Compute minimum cost paths and transitions
-function [minSumCosts,transitions] = computeMinSumCosts(costs)
+function [output,transitions] = computeDirectionalCosts(input)
     global smoothnessCosts4d
-    sumCosts = costs + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize costs
-    [~,ind] = min(sumCosts,[],3);
+    sum = input + smoothnessCosts4d;
+    output = permute(min(sum,[],3),[1 2 4 3]);
+    output = output - min(output,[],3); %normalize costs
+    [~,ind] = min(sum,[],3);
     transitions = int32(permute(ind,[1 2 4 3]));
 end

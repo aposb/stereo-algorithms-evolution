@@ -44,19 +44,19 @@ figure
 for it = 1:iterations
     % Create messages to right
     costs = matchingCosts + fromLeft + fromUp + fromDown;
-    toRight = computeMinSumCosts(costs);
+    toRight = computeDirectionalCosts(costs);
 
     % Create messages to left
     costs = matchingCosts + fromRight + fromUp + fromDown;
-    toLeft = computeMinSumCosts(costs);
+    toLeft = computeDirectionalCosts(costs);
 
     % Create messages to down
     costs = matchingCosts + fromUp + fromLeft + fromRight;
-    toDown = computeMinSumCosts(costs);
+    toDown = computeDirectionalCosts(costs);
 
     % Create messages to up
     costs = matchingCosts + fromDown + fromLeft + fromRight;
-    toUp = computeMinSumCosts(costs);
+    toUp = computeDirectionalCosts(costs);
 
     % Send all messages
     fromLeft = circshift(toRight,1,2); %shift right
@@ -86,14 +86,14 @@ end
 imwrite(dispImg,'disparity5b_BP2.png')
 
 % Compute messages
-function minSumCosts = computeMinSumCosts(costs)
+function output = computeDirectionalCosts(input)
     global p1 p2
-    minCosts = min(costs,[],3);
-    sumCosts = zeros([size(costs),4],'int32');
-    sumCosts(:,:,:,1) = costs;
-    sumCosts(:,:,:,2) = circshift(costs,1,3) + p1; sumCosts(:,:,1,2) = intmax;
-    sumCosts(:,:,:,3) = circshift(costs,-1,3) + p1; sumCosts(:,:,end,3) = intmax;
-    sumCosts(:,:,:,4) = minCosts + p2 + zeros(size(costs),'int32');
-    minSumCosts = min(sumCosts,[],4);
-    minSumCosts = minSumCosts - minCosts; %normalize messages
+    minInput = min(input,[],3);
+    possibleOutput = zeros([size(input),4],'int32');
+    possibleOutput(:,:,:,1) = input;
+    possibleOutput(:,:,:,2) = circshift(input,1,3) + p1; possibleOutput(:,:,1,2) = intmax;
+    possibleOutput(:,:,:,3) = circshift(input,-1,3) + p1; possibleOutput(:,:,end,3) = intmax;
+    possibleOutput(:,:,:,4) = minInput + p2 + zeros(size(input),'int32');
+    output = min(possibleOutput,[],4);
+    output = output - minInput; %normalize messages
 end

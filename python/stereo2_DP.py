@@ -17,12 +17,12 @@ computeMatchingCost = lambda left,right: np.absolute(left-right) #absolute diffe
 computeSmoothnessCost = lambda d1,d2: lambda_*np.minimum(np.absolute(d1-d2),trunc)
 
 # Compute minimum cost paths and transitions
-def computeMinSumCosts(costs):
-    sumCosts = costs[:,:,:,np.newaxis] + smoothnessCosts4d
-    minSumCosts = np.amin(sumCosts,axis=2)
-    minSumCosts = minSumCosts - np.amin(minSumCosts,axis=2)[:,:,np.newaxis] #normalize costs
-    transitions = np.argmin(sumCosts,axis=2).astype(np.int32)
-    return minSumCosts,transitions
+def computeDirectionalCosts(input_):
+    sum_ = input_[:,:,:,np.newaxis] + smoothnessCosts4d
+    output = np.amin(sum_,axis=2)
+    output = output - np.amin(output,axis=2)[:,:,np.newaxis] #normalize costs
+    transitions = np.argmin(sum_,axis=2).astype(np.int32)
+    return output,transitions
 
 # Load left and right images in grayscale
 leftImg = cv.imread("left.png",cv.IMREAD_GRAYSCALE)
@@ -57,7 +57,7 @@ transitions = np.zeros((rows,cols,dispLevels),dtype=np.int32)
 # Compute minimum cost paths and transitions for left to right direction
 for x in range(cols-1):
     costs = (matchingCosts[:,x,:] + fromLeft[:,x,:])[:,np.newaxis,:]
-    C,T = computeMinSumCosts(costs)
+    C,T = computeDirectionalCosts(costs)
     fromLeft[:,x+1,:] = C[:,0,:]
     transitions[:,x+1,:] = T[:,0,:]
 

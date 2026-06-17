@@ -53,25 +53,25 @@ for it = 1:iterations
     % Left to right pass (horizontal forward) - Send messages right
     for x = 1:cols-1
         costs = matchingCosts(:,x,:) + fromLeft(:,x,:) + fromUp(:,x,:) + fromDown(:,x,:);
-        fromLeft(:,x+1,:) = computeMinSumCosts(costs);
+        fromLeft(:,x+1,:) = computeDirectionalCosts(costs);
     end
 
     % Right to left pass (horizontal backward) - Send messages left
     for x = cols:-1:2
         costs = matchingCosts(:,x,:) + fromRight(:,x,:) + fromUp(:,x,:) + fromDown(:,x,:);
-        fromRight(:,x-1,:) = computeMinSumCosts(costs);
+        fromRight(:,x-1,:) = computeDirectionalCosts(costs);
     end
 
     % Up to down pass (vertical forward) - Send messages down
     for y = 1:rows-1
         costs = matchingCosts(y,:,:) + fromUp(y,:,:) + fromLeft(y,:,:) + fromRight(y,:,:);
-        fromUp(y+1,:,:) = computeMinSumCosts(costs);
+        fromUp(y+1,:,:) = computeDirectionalCosts(costs);
     end
 
     % Down to up pass (vertical backward) - Send messages up
     for y = rows:-1:2
         costs = matchingCosts(y,:,:) + fromDown(y,:,:) + fromLeft(y,:,:) + fromRight(y,:,:);
-        fromDown(y-1,:,:) = computeMinSumCosts(costs);
+        fromDown(y-1,:,:) = computeDirectionalCosts(costs);
     end
 
     % Compute total costs (belief)
@@ -96,9 +96,9 @@ end
 imwrite(dispImg,'disparity4_BP1.png')
 
 % Compute messages
-function minSumCosts = computeMinSumCosts(costs)
+function output = computeDirectionalCosts(input)
     global smoothnessCosts4d
-    sumCosts = costs + smoothnessCosts4d;
-    minSumCosts = permute(min(sumCosts,[],3),[1 2 4 3]);
-    minSumCosts = minSumCosts - min(minSumCosts,[],3); %normalize messages
+    sum = input + smoothnessCosts4d;
+    output = permute(min(sum,[],3),[1 2 4 3]);
+    output = output - min(output,[],3); %normalize messages
 end
