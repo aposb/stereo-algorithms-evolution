@@ -21,7 +21,7 @@ The algorithms are optimized for performance using matrix operations and other t
 ## Algorithms
 
 ### Approach A (BP-Like)
-Uses a smoothness cost function. The directional cost vector (message) is computed using convolution on the sum of previous cost vectors (incoming messages) and the smoothness function.
+Uses a smoothness cost function. The directional cost vector (message) is computed using min-convolution on the sum of previous cost vectors (incoming messages) and the smoothness cost function.
 
 | Number | Name | MATLAB Implementation | Python Implementation |
 | --- | --- | --- | --- |
@@ -41,6 +41,8 @@ Uses occlusion penalties p1 and p2. The directional cost vector (message) is com
 | 3 | **Semi-Global Matching** | **[`stereo3b_SGM.m`](./matlab/stereo3b_SGM.m)** | **[`stereo3b_SGM.py`](./python/stereo3b_SGM.py)** |
 | 4 | **Belief Propagation (Directional)** | **[`stereo4b_BP1.m`](./matlab/stereo4b_BP1.m)** | **[`stereo4b_BP1.py`](./python/stereo4b_BP1.py)** |
 | 5 | **Belief Propagation (Synchronous)** | **[`stereo5b_BP2.m`](./matlab/stereo5b_BP2.m)** | **[`stereo5b_BP2.py`](./python/stereo5b_BP2.py)** |
+
+- A smoothness cost function that can relate the two approaches is: V(0)=0, V(-1)=p1, V(1)=p1 and V(n)=p2 when |n|≥2
 
 ## Installation
 
