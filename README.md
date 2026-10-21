@@ -78,7 +78,7 @@ This approach uses a general smoothness cost function, following the message upd
 
 ### Approach B (SGM-Like)
 
-This approach uses explicit disparity-change penalties **_P₁_** and **_P₂_**, following the cost aggregation principle used in Semi-Global Matching. The outgoing message uses the sum of incoming messages as an input vector. Four possible costs are computed for each element via disparity-change penalties, and the minimum is mapped to the output vector.
+This approach uses explicit disparity-change penalties **_P₁_** and **_P₂_**, following the cost aggregation principle used in Semi-Global Matching. The outgoing message is computed using the sum of the incoming messages as an input vector. Four possible costs are computed for each element via disparity-change penalties, and the minimum is mapped to the output vector.
 
 | # | Algorithm | MATLAB Implementation | Python Implementation |
 | :---: | --- | :---: | :---: |
