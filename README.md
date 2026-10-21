@@ -35,7 +35,7 @@ In more detail:
 5. **Belief Propagation (Synchronous)** computes costs across 4 directions without scanning the image (i.e., no recursion) and improves with iterations.
 
 ### Observation 2
-BP (Directional and Synchronous) and SGM differ in their cost computation methods. BP employs a more general approach (smoothness cost function), while SGM utilizes a more specific method (disparity-change penalties **_P₁_** and **_P₂_**). Although each algorithm proposes its own cost computation method, in practice, both methods can be applied to both algorithms. Furthermore, both methods can be applied to DP, allowing the algorithm to overcome its limitation regarding long jumps between disparities. Consequently, we can compute the cost in all algorithms (except Block Matching) using 2 different methodologies: the methodology used by Semi-Global Matching and the methodology used by Belief Propagation.
+BP (Directional and Synchronous) and SGM differ in their cost computation methods. BP employs a more general approach (smoothness cost function), while SGM utilizes a more specific method (disparity-change penalties **_P₁_** and **_P₂_**). Although each algorithm proposes its own cost computation method, in practice, both methods can be applied to both algorithms. Furthermore, both methods can be applied to DP, allowing the algorithm to overcome its limitation regarding long jumps (large disparity discontinuities) between disparities. Consequently, we can compute the cost in all algorithms (except Block Matching) using 2 different methodologies: the methodology used by Semi-Global Matching and the methodology used by Belief Propagation.
 
 ## Modifications
 
@@ -144,7 +144,7 @@ The disparity maps below were generated using the classic **Tsukuba stereo pair*
 
 ## Notes
 
-- In this implementation, DP allows long jumps (large disparity discontinuities) between disparities.
+- In this implementation, DP allows long jumps between disparities.
 - In this implementation, SGM operates in 4 directions (similar to BP).
 - With a compatible smoothness function and disparity-change penalties, the two cost computation approaches produce identical disparity maps.
 - The results between the MATLAB and Python implementations are similar, but not necessarily identical. Any minor differences that may exist are primarily due to how the input images are converted to grayscale and how the Gaussian filters are applied.
