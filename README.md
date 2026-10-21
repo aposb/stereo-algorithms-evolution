@@ -154,7 +154,7 @@ The disparity maps below were generated using the classic **Tsukuba stereo pair*
 
 ### Project Repository
 
-- [Basic Stereo Algorithms (Evolution)](https://github.com/aposb/stereo-algorithms-evolution)
+- [Evolution of Basic Stereo Matching Algorithms](https://github.com/aposb/stereo-algorithms-evolution)
 
 ### Related Projects
 
