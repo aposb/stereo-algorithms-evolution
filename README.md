@@ -111,16 +111,29 @@ This approach uses explicit disparity-change penalties **_P₁_** and **_P₂_**
 
 ### Summary
 
-**Approach A**
-1. Sum of Incoming Messages + Matching Cost
-2. Min-Convolution (with Smoothness Cost Function)
-3. Outgoing Message
+Approach A (BP-Like):
 
-**Approach B**
-1. Sum of Incoming Messages + Matching Cost
-2. Four Possible Costs (using Disparity-Change Penalties)
-3. Minimum Cost
-4. Outgoing Message
+```text
+    Sum of Incoming Messages + Matching Cost
+                       ↓
+                Min-Convolution
+        (with Smoothness Cost Function)
+                       ↓
+                Outgoing Message
+```
+
+Approach B (SGM-Like):
+
+```text
+    Sum of Incoming Messages + Matching Cost
+                       ↓
+              Four Possible Costs
+       (using Disparity-Change Penalties)
+                       ↓
+                  Minimum Cost
+                       ↓
+                Outgoing Message
+```
 
 _Both approaches yield identical results when the smoothness cost function is consistent with the disparity-change penalties. The following smoothness cost function establishes this relationship:_
 
@@ -180,7 +193,7 @@ The following results were generated using the classic **Tsukuba stereo pair**. 
 
 ## Notes
 
-- In this implementation, SGM operates in 4 directions (similar to BP).
+- In this project, DP allows long jumps between disparities and SGM operates in 4 directions (similar to BP).
 - With a compatible smoothness function and disparity-change penalties, the two cost computation approaches produce identical disparity maps.
 - The results between the MATLAB and Python implementations are similar, but not necessarily identical. Any minor differences that may exist are primarily due to how the input images are converted to grayscale and how the Gaussian filters are applied.
 - The displayed results correspond to the MATLAB implementation.
